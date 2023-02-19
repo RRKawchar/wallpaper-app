@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CategoryBlock extends StatelessWidget {
-  const CategoryBlock({Key? key}) : super(key: key);
+  String categoryName;
+  String categoryImgSrc;
+   CategoryBlock({Key? key,required this.categoryName,required this.categoryImgSrc}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,7 @@ class CategoryBlock extends StatelessWidget {
             child: Image.network(
               height: 50,
               width: 100,
-                "https://images.pexels.com/photos/2676096/pexels-photo-2676096.jpeg?auto=compress&cs=tinysrgb&w=1600",
+              categoryImgSrc,
             fit: BoxFit.cover,),
           ),
           Container(
@@ -25,10 +27,10 @@ class CategoryBlock extends StatelessWidget {
               borderRadius: BorderRadius.circular(12)
             ),
           ),
-          const Positioned(
+           Positioned(
             left: 30,
             top: 15,
-            child: Text("Cars",style: TextStyle(
+            child: Text(categoryName,style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w500
             ),),
