@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:my_wallpaper/models/category_model.dart';
 import 'package:my_wallpaper/models/photos_model.dart';
 
-class ApiOperation {
+class ApiService {
   static List<PhotosModel> photoList = [];
   static List<PhotosModel> searchList=[];
   static List<CategoryModel> categoryList=[];
@@ -39,7 +39,7 @@ class ApiOperation {
       for (var element in photos) {
         searchList.add(PhotosModel.fromApi2App(element));
       }
-      print(searchList[0].imgSrc);
+      //print(searchList[0].imgSrc);
     });
 
     return searchList;
@@ -52,14 +52,18 @@ class ApiOperation {
       "Bikes",
       "Street",
       "City",
-      "Flowers"
+      "Flowers",
+      "Mosque",
+      "House",
+      "Bird"
+      "village"
     ];
     categoryList.clear();
     cateogryName.forEach((catName) async {
-      final _random = new Random();
+      final random =  Random();
 
       PhotosModel photoModel =
-      (await searchWallpaper(catName))[0 + _random.nextInt(11 - 0)];
+      (await searchWallpaper(catName))[0 + random.nextInt(11 - 0)];
       print("IMG SRC IS HERE");
       print(photoModel.imgSrc);
       categoryList

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_wallpaper/controller/api_operation.dart';
 import 'package:my_wallpaper/models/photos_model.dart';
-import 'package:my_wallpaper/view/screens/home_screen.dart';
+import 'package:my_wallpaper/service/api_service.dart';
+import 'package:my_wallpaper/view/main_screen/main_screen.dart';
 import 'package:my_wallpaper/view/widgets/custom_app_bar.dart';
 import 'package:my_wallpaper/view/widgets/search_bar.dart';
 
@@ -23,7 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> getSearchWallpaper() async {
     try {
       List<PhotosModel>? result =
-          await ApiOperation.searchWallpaper(widget.query);
+          await ApiService.searchWallpaper(widget.query);
       setState(() {
         searchList = result;
       });
@@ -56,7 +56,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         leading: IconButton(
           onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>const HomeScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>const MainScreen()));
           },
           icon:const Icon(Icons.arrow_back,color: Colors.black,),
         ),

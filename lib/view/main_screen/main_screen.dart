@@ -11,20 +11,23 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  var list=[
+  var list = [
     HomeScreen(),
-    Text("Category Screen"),
-    Text("Favourite Screen")
+    CategoryScreen(),
+    Text("Favourite Screen"),
   ];
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black54,
         elevation: 0.0,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -32,20 +35,20 @@ class _MainScreenState extends State<MainScreen> {
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
+            icon: Icon(Icons.category),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
+            icon: Icon(Icons.favorite_border),
             label: '',
           ),
         ],
         currentIndex: _selectedIndex,
-         selectedItemColor: Colors.amber[800],
-         onTap: _onItemTapped,
+        selectedItemColor: Colors.amber[800],
+        unselectedItemColor: Colors.white,
+        onTap: _onItemTapped,
       ),
       body: list[_selectedIndex],
     );
-
   }
 }
