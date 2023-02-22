@@ -152,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 imageUrl: photosList![index]
                                                     .imgSrc
                                                     .toString(),
+                                                    id: photosList![index].id.toString(),
                                               ),
                                             ),
                                           );

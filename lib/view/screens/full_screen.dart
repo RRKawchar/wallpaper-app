@@ -36,21 +36,39 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart'as http;
+import 'package:http/http.dart' as http;
 
 class MyFullScreen extends StatefulWidget {
   String imageUrl;
-  MyFullScreen({Key? key, required this.imageUrl}) : super(key: key);
+  String id;
+  MyFullScreen({Key? key, required this.imageUrl,required this.id}) : super(key: key);
 
   @override
   _MyFullScreenState createState() => _MyFullScreenState();
 }
 
 class _MyFullScreenState extends State<MyFullScreen> {
+  var deviceId = '';
+  Future<String> getAndroidDeviceId() async {
+    final DeviceInfoPlugin deviceInfoPlugin =  DeviceInfoPlugin();
+    try {
+      AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
+      deviceId ="${androidInfo.device}"+"${androidInfo.id}";
+      print('Android Device ID: $deviceId');
+    } catch (e) {
+      print('Failed to get Android device ID: $e');
+    }
+    return deviceId;
+  }
 
+///emu64xaTRA4.220822.001.C4
+///emu64xaTRA4.220822.001.C4
 
   // Future<void> _setWallpaper() async {
   //   if (widget.imageBytes == null) {
@@ -149,11 +167,39 @@ class _MyFullScreenState extends State<MyFullScreen> {
     await OpenFile.open('${tempDir.path}/image.png');
   }
 
+   void saveFavoriteImage(String imageUrl, String userId) {
+     // Get a reference to the "FavoriteImages" collection in Firestore.
+     CollectionReference favoritesRef = FirebaseFirestore.instance.collection('FavoriteImages');
 
+     // Create a new document in the collection.
+     DocumentReference newFavoriteRef = favoritesRef.doc();
+
+     // Set the fields for the new document.
+     newFavoriteRef.set({
+       'imageUrl': imageUrl,
+       'userId': userId,
+     });
+   }
+
+  // void addDocumentWithCustomID(String imageUrl, String userId) {
+  //   FirebaseFirestore.instance.collection('myCollection')
+  //       .doc(deviceId)
+  //       .set({
+  //     'imageUrl': imageUrl,
+  //     'userId': userId,
+  //   })
+  //       .then((value) => print("Document added with ID: myDocumentId"))
+  //       .catchError((error) => print("Failed to add document: $error"));
+  // }
 
 
   @override
   Widget build(BuildContext context) {
+    getAndroidDeviceId();
+    CollectionReference favoritesRef = FirebaseFirestore.instance.collection('FavoriteImages');
+    Query query = favoritesRef;
+
+    print("This is image id : ${widget.id}");
     return Scaffold(
         floatingActionButton: ElevatedButton(
           onPressed: _downloadImage,
@@ -162,19 +208,67 @@ class _MyFullScreenState extends State<MyFullScreen> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         body: Hero(
           tag: widget.imageUrl,
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(
-                  widget.imageUrl,
-                ),
-                fit: BoxFit.cover,
-              ),
-            ),
+          child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance.collection('FavoriteImages').where('userId',isEqualTo: widget.id).snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              List<DocumentSnapshot> favoriteImageDocs = snapshot.data!.docs;
+              return Stack(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          widget.imageUrl,
+                        ),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 40,
+                    right: 10,
+                    child: Column(
+                      children: [
+                        IconButton(
+                          onPressed: (){
+                            saveFavoriteImage(widget.imageUrl, widget.id);
+                          },
+                            icon:favoriteImageDocs.length==0?const Icon(
+                              Icons.favorite_border,
+                              color: Colors.red,
+                              size: 30,
+                            ):const Icon(
+                              Icons.favorite,
+                              color: Colors.red,
+                              size: 30,
+                            )),
+                        const SizedBox(height: 5),
+                        const Text(
+                          "12",
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Icon(
+                          Icons.arrow_circle_up_sharp,
+                          color: Colors.white,
+                          size: 30,
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              );
+            }
           ),
-        )
-        );
+        ));
   }
 }

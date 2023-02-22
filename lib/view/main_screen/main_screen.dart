@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_wallpaper/view/screens/category_screen.dart';
+import 'package:my_wallpaper/view/screens/favourite_screen.dart';
 import 'package:my_wallpaper/view/screens/home_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   var list = [
     HomeScreen(),
     CategoryScreen(),
-    Text("Favourite Screen"),
+    FavoriteScreen(),
   ];
   void _onItemTapped(int index) {
     setState(() {
