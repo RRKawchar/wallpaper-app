@@ -1,8 +1,10 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:my_wallpaper/models/photos_model.dart';
 import 'package:my_wallpaper/service/api_service.dart';
 import 'package:my_wallpaper/view/screens/full_screen.dart';
 import 'package:my_wallpaper/view/widgets/custom_app_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CategoryDetailsScreen extends StatefulWidget {
   String catName;
@@ -18,6 +20,21 @@ class CategoryDetailsScreen extends StatefulWidget {
 class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
   late List<PhotosModel> categoryResults;
   bool isLoading = true;
+
+  late String deviceId;
+
+  Future<void> getAndroidDeviceId() async {
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    try {
+      AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
+      deviceId = "${androidInfo.device}" + "${androidInfo.id}";
+      print('Android Device ID: $deviceId');
+    } catch (e) {
+      print('Failed to get Android device ID: $e');
+      deviceId = '';
+    }
+  }
+
   GetCatRelWall() async {
     categoryResults = await ApiService.searchWallpaper(widget.catName);
 
@@ -29,6 +46,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
   @override
   void initState() {
     GetCatRelWall();
+    getAndroidDeviceId();
     super.initState();
   }
 
@@ -129,18 +147,21 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
                         itemCount: categoryResults.length,
                         itemBuilder: ((context, index) => GridTile(
                               child: InkWell(
-                                onTap: () {
+                                onTap: () async{
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => MyFullScreen(
                                                 imageUrl: categoryResults[index]
-                                                    .imgSrc,
+                                                    .url,
                                             id: categoryResults[index].id.toString(),
+                                            deviceId: deviceId,
                                               )));
+                                  SharedPreferences preferences =await SharedPreferences.getInstance();
+                                  preferences.setString('deviceId', deviceId);
                                 },
                                 child: Hero(
-                                  tag: categoryResults[index].imgSrc,
+                                  tag: categoryResults[index].url,
                                   child: Container(
                                     height: 800,
                                     width: 50,
@@ -154,7 +175,7 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
                                           height: 800,
                                           width: 50,
                                           fit: BoxFit.cover,
-                                          categoryResults[index].imgSrc),
+                                          categoryResults[index].url),
                                     ),
                                   ),
                                 ),

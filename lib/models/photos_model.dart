@@ -1,15 +1,15 @@
 class PhotosModel {
-  String imgSrc;
-  String photoName;
-  int id;
+  final int id;
+  final String photographer;
+  final String url;
 
-  PhotosModel({required this.imgSrc, required this.photoName,required this.id});
+  PhotosModel({required this.id,required this.photographer,required this.url});
 
-  static PhotosModel fromApi2App(Map<String, dynamic> photos) {
+  factory PhotosModel.fromJson(Map<String,dynamic> json){
     return PhotosModel(
-      imgSrc: (photos['src'])['portrait'],
-      photoName: photos['photographer'],
-      id: photos['id'],
+        id: json['id'],
+        photographer: json['photographer'],
+        url: json['src']['portrait'],
     );
   }
 }

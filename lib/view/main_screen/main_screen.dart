@@ -1,7 +1,9 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:my_wallpaper/view/screens/category_screen.dart';
 import 'package:my_wallpaper/view/screens/favourite_screen.dart';
 import 'package:my_wallpaper/view/screens/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -12,15 +14,37 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  late String deviceId;
+
+  Future<void> getAndroidDeviceId() async {
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    try {
+      AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
+      deviceId = "${androidInfo.device}" + "${androidInfo.id}";
+      print('Android Device ID: $deviceId');
+    } catch (e) {
+      print('Failed to get Android device ID: $e');
+      deviceId = '';
+    }
+  }
   var list = [
     HomeScreen(),
     CategoryScreen(),
-    FavoriteScreen(),
+    FavoriteScreen()
   ];
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async{
+    SharedPreferences preferences =await SharedPreferences.getInstance();
+    preferences.setString('deviceId', deviceId);
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+
+@override
+  void initState() {
+    getAndroidDeviceId();
+    super.initState();
   }
 
   @override

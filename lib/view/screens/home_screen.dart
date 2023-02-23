@@ -1,3 +1,4 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:my_wallpaper/models/category_model.dart';
 import 'package:my_wallpaper/models/photos_model.dart';
@@ -6,6 +7,7 @@ import 'package:my_wallpaper/view/screens/full_screen.dart';
 import 'package:my_wallpaper/view/widgets/build_image.dart';
 import 'package:my_wallpaper/view/widgets/custom_app_bar.dart';
 import 'package:my_wallpaper/view/widgets/search_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,9 +17,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<PhotosModel>? photosList;
+  late Future<List<PhotosModel>> _photoList;
   List<CategoryModel>? categoryList;
   bool isLoading = true;
+
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  GlobalKey<RefreshIndicatorState>();
+  late String deviceId;
+
+  Future<void> getAndroidDeviceId() async {
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    try {
+      AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
+      deviceId = "${androidInfo.device}" + "${androidInfo.id}";
+      print('Android Device ID: $deviceId');
+    } catch (e) {
+      print('Failed to get Android device ID: $e');
+      deviceId = '';
+    }
+  }
 
   GetCatDetails() async {
     categoryList = await ApiService.getCategoriesList();
@@ -28,17 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  getWallpaper() async {
-    photosList = await ApiService.getWallpaper();
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-
   @override
   void initState() {
-    getWallpaper();
+    _photoList = ApiService.fetchCuratedPhotos();
+    getAndroidDeviceId();
     //GetCatDetails();
     super.initState();
   }
@@ -46,17 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   elevation: 0.0,
-      //   backgroundColor: Colors.black26,
-      //   automaticallyImplyLeading: false,
-      //
-      //   title: CustomAppBar(
-      //     text1: "Wallpaper",
-      //     text2: "App",
-      //   ),
-      // ),
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         height: MediaQuery.of(context).size.height,
@@ -83,82 +83,65 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: SearchBar()),
-            // FutureBuilder(
-            //     future: ApiOperation.getWallpaper(),
-            //     builder: (context,snapshot){
-            //   if(snapshot.connectionState==ConnectionState.waiting){
-            //     return const Center(child: CircularProgressIndicator(),);
-            //   }else{
-            //     return Container(
-            //       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            //       margin: const EdgeInsets.symmetric(vertical: 20),
-            //       child: SizedBox(
-            //         height: 50,
-            //         width: MediaQuery.of(context).size.width,
-            //         child: ListView.builder(
-            //             scrollDirection: Axis.horizontal,
-            //             itemCount: categoryList!.length,
-            //             itemBuilder: (context, index) {
-            //               return  CategoryBlock(
-            //                 categoryImgSrc: categoryList![index].catImgUrl,
-            //                 categoryName: categoryList![index].catName,
-            //               );
-            //             }),
-            //       ),
-            //     );
-            //   }
-            // }),
 
             Expanded(
               child: SingleChildScrollView(
-                child: photosList == null
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : FutureBuilder(
-                        future: ApiService.getWallpaper(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
+                child: RefreshIndicator(
+                    triggerMode: RefreshIndicatorTriggerMode.anywhere,
+                    key: _refreshIndicatorKey,
+                    onRefresh: () {
+                      setState(() {});
+                      return ApiService.fetchCuratedPhotos();
+                    },
+                  child: FutureBuilder<List<PhotosModel>>(
+                      future: ApiService.fetchCuratedPhotos(),
+                      builder: (context, snapshot) {
+                        if(snapshot.connectionState==ConnectionState.waiting){
+                          return const Center(child: CircularProgressIndicator(),);
+                        }else{
+                          final photoList=snapshot.data;
+                          var rndItem = snapshot.data!.shuffle();
                           return Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
+                            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: SizedBox(
-                              height: MediaQuery.of(context).size.height,
+                              height: MediaQuery.of(context).size.height/1.3,
                               child: GridView.builder(
                                 physics: const BouncingScrollPhysics(),
                                 gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 3,
-                                        crossAxisSpacing: 5.0,
-                                        mainAxisSpacing: 5.0,
-                                        mainAxisExtent: 220),
-                                itemCount: photosList!.length,
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 5.0,
+                                    mainAxisSpacing: 5.0,
+                                    mainAxisExtent: 220),
+                                itemCount: photoList!.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   // build each item in the grid here
                                   return Stack(
                                     children: [
                                       InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  MyFullScreen(
-                                                imageUrl: photosList![index]
-                                                    .imgSrc
-                                                    .toString(),
-                                                    id: photosList![index].id.toString(),
+                                          onTap: () async{
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => MyFullScreen(
+                                                  imageUrl: photoList[index]
+                                                      .url
+                                                      .toString(),
+                                                  id: photoList[index]
+                                                      .id
+                                                      .toString(),
+                                                  deviceId: deviceId,
+                                                ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                        child: BuildImage(size: MediaQuery.of(context).size,imgUrl: photosList![index].imgSrc.toString(),)
-                                        
+                                            );
+                                            SharedPreferences preferences =await SharedPreferences.getInstance();
+                                            preferences.setString('deviceId', deviceId);
+                                          },
+                                          child: BuildImage(
+                                            size: MediaQuery.of(context).size,
+                                            imgUrl: photoList[index].url.toString(),
+                                          )
+
                                         // Container(
                                         //   height: MediaQuery.of(context)
                                         //       .size
@@ -183,9 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         bottom: 10,
                                         left: 10,
                                         child: Text(
-                                          photosList![index]
-                                              .photoName
-                                              .toString(),
+                                          photoList[index].photographer.toString(),
                                           style: const TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold,
@@ -198,7 +179,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           );
-                        }),
+
+                        }
+
+                      }),
+                ),
               ),
             ),
 

@@ -80,10 +80,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 key: _refreshIndicatorKey,
                 onRefresh: () {
                   setState(() {});
-                  return ApiService.getWallpaper();
+                  return ApiService.fetchCuratedPhotos();
                 },
                 child: FutureBuilder(
-                    future: ApiService.getWallpaper(),
+                    future: ApiService.fetchCuratedPhotos(),
                     builder: (context,snapshot){
                       if(snapshot.connectionState==ConnectionState.waiting){
                         return const Center(child: CircularProgressIndicator(),);
