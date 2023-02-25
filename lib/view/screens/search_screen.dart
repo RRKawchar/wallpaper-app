@@ -69,8 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         leading: IconButton(
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const MainScreen()));
+            Navigator.pop(context);
           },
           icon: const Icon(
             Icons.arrow_back,

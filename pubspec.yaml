@@ -47,6 +47,7 @@ dependencies:
   flutter_wallpaper_manager: ^0.0.3
   flutter_cache_manager: ^3.3.0
   shared_preferences: ^2.0.18
+  flutter_easyloading: ^3.0.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

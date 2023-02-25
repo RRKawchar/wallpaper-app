@@ -2,7 +2,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:my_wallpaper/view/screens/category_screen.dart';
 import 'package:my_wallpaper/view/screens/favourite_screen.dart';
-import 'package:my_wallpaper/view/screens/home_screen.dart';
+import 'package:my_wallpaper/view/screens/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {

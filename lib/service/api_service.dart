@@ -8,7 +8,7 @@ import 'package:my_wallpaper/models/photos_model.dart';
 class ApiService {
   static List<PhotosModel> searchList = [];
   static List<CategoryModel> categoryList = [];
-
+   /// All Photos Api
   static Future<List<PhotosModel>> fetchCuratedPhotos() async {
     const String apiKey =
         'OeAOSL55vHEcGUTq4GzZXNu8Lm2wGzt3VMITXV2OJtS6rBRMndsgbPOl';
@@ -29,6 +29,85 @@ class ApiService {
     }
   }
 
+
+  /// Natural Photos Api
+  static Future<List<PhotosModel>> fetchNaturePhoto() async {
+    const url =
+        'https://api.pexels.com/v1/search?query=nature&per_page=30&page=1';
+
+    final response = await http.get(Uri.parse(url), headers: {
+      'Authorization': 'OeAOSL55vHEcGUTq4GzZXNu8Lm2wGzt3VMITXV2OJtS6rBRMndsgbPOl'
+    });
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['photos'];
+      final List<PhotosModel> photos=data.map((json) => PhotosModel.fromJson(json)).toList();
+      print(" This is my Nature Photos data $photos");
+      return photos;
+    } else {
+     throw Exception("Failed to load Photos");
+    }
+  }
+
+  /// Cars Photos Api
+  static Future<List<PhotosModel>> carsPhoto() async {
+    const url =
+        'https://api.pexels.com/v1/search?query=cars&per_page=30&page=1';
+
+    final response = await http.get(Uri.parse(url), headers: {
+      'Authorization': 'OeAOSL55vHEcGUTq4GzZXNu8Lm2wGzt3VMITXV2OJtS6rBRMndsgbPOl'
+    });
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['photos'];
+      final List<PhotosModel> photos=data.map((json) => PhotosModel.fromJson(json)).toList();
+      print(" This is my Nature Photos data $photos");
+      return photos;
+    } else {
+      throw Exception("Failed to load Photos");
+    }
+  }
+
+  /// Cars Photos Api
+  static Future<List<PhotosModel>> bikesPhoto() async {
+    const url =
+        'https://api.pexels.com/v1/search?query=bikes&per_page=30&page=1';
+
+    final response = await http.get(Uri.parse(url), headers: {
+      'Authorization': 'OeAOSL55vHEcGUTq4GzZXNu8Lm2wGzt3VMITXV2OJtS6rBRMndsgbPOl'
+    });
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['photos'];
+      final List<PhotosModel> photos=data.map((json) => PhotosModel.fromJson(json)).toList();
+      print(" This is my Nature Photos data $photos");
+      return photos;
+    } else {
+      throw Exception("Failed to load Photos");
+    }
+  }
+
+  /// Cars Photos Api
+  static Future<List<PhotosModel>> housesPhoto() async {
+    const url =
+        'https://api.pexels.com/v1/search?query=houses&per_page=30&page=1';
+
+    final response = await http.get(Uri.parse(url), headers: {
+      'Authorization': 'OeAOSL55vHEcGUTq4GzZXNu8Lm2wGzt3VMITXV2OJtS6rBRMndsgbPOl'
+    });
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['photos'];
+      final List<PhotosModel> photos=data.map((json) => PhotosModel.fromJson(json)).toList();
+      print(" This is my Nature Photos data $photos");
+      return photos;
+    } else {
+      throw Exception("Failed to load Photos");
+    }
+  }
+
+
+  /// Search Photos Api
   static Future<List<PhotosModel>> searchWallpaper(String query) async {
     await http.get(
         Uri.parse(
@@ -49,6 +128,8 @@ class ApiService {
     return searchList;
   }
 
+
+  /// Categories Api
   static List<CategoryModel> getCategoriesList() {
     List cateogryName = [
       "Cars",

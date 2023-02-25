@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:my_wallpaper/view/main_screen/main_screen.dart';
+import 'package:my_wallpaper/view/splash/splash_screen.dart';
 
 Future<void> main()async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home:const MainScreen(),
+      home:const SplashScreen(),
     );
   }
 }
