@@ -2,10 +2,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:my_wallpaper/models/photos_model.dart';
 import 'package:my_wallpaper/service/api_service.dart';
-import 'package:my_wallpaper/view/main_screen/main_screen.dart';
 import 'package:my_wallpaper/view/screens/full_screen.dart';
 import 'package:my_wallpaper/view/widgets/custom_app_bar.dart';
-import 'package:my_wallpaper/view/widgets/search_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchScreen extends StatefulWidget {

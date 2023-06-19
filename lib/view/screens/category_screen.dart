@@ -3,7 +3,6 @@ import 'package:my_wallpaper/models/category_model.dart';
 import 'package:my_wallpaper/service/api_service.dart';
 import 'package:my_wallpaper/view/widgets/category_block.dart';
 import 'package:my_wallpaper/view/widgets/custom_app_bar.dart';
-import 'package:my_wallpaper/view/widgets/search_bar.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({Key? key}) : super(key: key);

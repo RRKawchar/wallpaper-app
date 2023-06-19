@@ -38,7 +38,7 @@ class _HousesScreensState extends State<HousesScreens> {
 
   @override
   Widget build(BuildContext context) {
-    return _photoList==null?Center(child: CircularProgressIndicator(),):FutureBuilder<List<PhotosModel>>(
+    return _photoList==null?const Center(child: CircularProgressIndicator(),):FutureBuilder<List<PhotosModel>>(
         future: ApiService.housesPhoto(),
         builder: (context, snapshot) {
           if(snapshot.connectionState==ConnectionState.waiting){

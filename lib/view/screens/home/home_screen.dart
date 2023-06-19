@@ -4,15 +4,11 @@ import 'package:my_wallpaper/models/category_model.dart';
 import 'package:my_wallpaper/models/photos_model.dart';
 import 'package:my_wallpaper/service/api_service.dart';
 import 'package:my_wallpaper/view/screens/home/all_photos_screen.dart';
-import 'package:my_wallpaper/view/screens/full_screen.dart';
 import 'package:my_wallpaper/view/screens/home/bikes_screen.dart';
 import 'package:my_wallpaper/view/screens/home/cars_screens.dart';
 import 'package:my_wallpaper/view/screens/home/house_screens.dart';
 import 'package:my_wallpaper/view/screens/home/natural_screen.dart';
-import 'package:my_wallpaper/view/widgets/build_image.dart';
 import 'package:my_wallpaper/view/widgets/custom_app_bar.dart';
-import 'package:my_wallpaper/view/widgets/search_bar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
